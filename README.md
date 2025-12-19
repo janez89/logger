@@ -74,7 +74,12 @@ interface Logger {
 
 declare const logger: Logger;
 
-export declare function getLogger(name: string): Logger;
+/**
+ * Get a logger instance with the specified name.
+ * @param name Name of the logger.
+ * @param logLevel Log level for the logger. Defaults to the global log level.
+ */
+export declare function getLogger(name: string, logLevel?: LogLevel): Logger;
 export default logger;
 ```
 

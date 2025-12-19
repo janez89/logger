@@ -8,7 +8,6 @@ import { join, extname } from 'node:path';
  * @returns {Promise<void>}
  */
 async function walk({ dir, from, to }) {
-  console.log('dir:', dir)
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) {

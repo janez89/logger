@@ -87,12 +87,12 @@ function serialize(args: unknown[]): string {
         .join(' ');
 }
 
-function baseLog(level: LogLevel, name: string, ...args: unknown[]) {
-    if (!shouldLog(level, GLOBAL_LEVEL)) {
+function baseLog(logger: Logger, level: LogLevel, ...args: unknown[]) {
+    if (!shouldLog(level, logger.level)) {
         return;
     }
     const ts = colorize(Color.gray, formatTimestamp());
-    const prefix = `${ts} ${colorize(LevelColor[level], level.padStart(5))} ${colorize(Color.magenta, process.pid)} --- ${colorize(Color.cyan, name)}:`;
+    const prefix = `${ts} ${colorize(LevelColor[level], level.padStart(5))} ${colorize(Color.magenta, process.pid)} --- ${colorize(Color.cyan, logger.name)}:`;
     const line = `${prefix} ${serialize(args)}`;
 
     if (level === 'ERROR' || level === 'WARN') {
@@ -104,31 +104,37 @@ function baseLog(level: LogLevel, name: string, ...args: unknown[]) {
 
 const loggers = new Map<string, Logger>();
 
-export function getLogger(name: string): Logger {
+/**
+ * Get a logger instance with the specified name.
+ * @param name Name of the logger.
+ * @param logLevel Log level for the logger. Defaults to the global log level.
+ */
+export function getLogger(name: string, logLevel?: LogLevel): Logger {
     if (loggers.has(name)) {
         return loggers.get(name)!;
     }
 
     const logger: Logger = Object.freeze({
         name,
-        level: GLOBAL_LEVEL,
+        level: logLevel || GLOBAL_LEVEL,
         log: (logLevel: LogLevel, ...args: unknown[]) => LEVEL_WEIGHT[logLevel] === undefined
             ? logger.warn(`Invalid log level: ${logLevel}. The line was not logged.`)
-            : baseLog(logLevel, name, ...args),
-        debug: (...args: unknown[]) => baseLog('DEBUG', name, ...args),
-        info: (...args: unknown[]) => baseLog('INFO', name, ...args),
-        warn: (...args: unknown[]) => baseLog('WARN', name, ...args),
-        error: (...args: unknown[]) => baseLog('ERROR', name, ...args),
+            : baseLog(logger, logLevel, ...args),
+        debug: (...args: unknown[]) => baseLog(logger, 'DEBUG', ...args),
+        info: (...args: unknown[]) => baseLog(logger, 'INFO', ...args),
+        warn: (...args: unknown[]) => baseLog(logger, 'WARN', ...args),
+        error: (...args: unknown[]) => baseLog(logger, 'ERROR', ...args),
     });
 
+    logger.debug(`${name} Logger initialized. Log level: ${logger.level}`);
     loggers.set(name, logger);
+
     return logger;
 }
 
 // Optional: convenience root logger
 const logger = getLogger(ROOT_LOGGER_NAME);
+logger.debug(`Use LOG_LEVEL=INFO to decrease verbosity. Supported values: ${Object.keys(LEVEL_WEIGHT).join(', ')}`);
 
-logger.info(`Logger initialized. Global log level: ${GLOBAL_LEVEL}. Node version: ${process.version}`)
-logger.debug(`Use LOG_LEVEL=INFO to decrease verbosity. Supported values: ${Object.keys(LEVEL_WEIGHT).join(', ')}`)
 
 export default logger;

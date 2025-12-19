@@ -46,6 +46,27 @@ test('root logger', () => {
     }
 });
 
+test('decreased verbosity', () => {
+    const cap = captureStdoutStderr();
+    try {
+        const logger = getLogger('test', 'WARN');
+        logger.debug('debug');
+        logger.info('info');
+        logger.warn('warn');
+        logger.error('error', new Error('Oops!'));
+
+        logger.log('INVALID-LOG-LEVEL' as any, 'something');
+
+        assert.equal(cap.stdout, '');
+
+        assert.match(cap.stderr, /WARN .* test: warn\n/);
+        assert.match(cap.stderr, /ERROR .* test: error Error: Oops!\n/);
+        assert.match(cap.stderr, /WARN .* test: Invalid log level: INVALID-LOG-LEVEL. The line was not logged.\n/);
+    } finally {
+        cap.restore();
+    }
+});
+
 function captureStdoutStderr() {
     const originalStdoutWrite = process.stdout.write;
     const originalStderrWrite = process.stderr.write;

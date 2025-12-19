@@ -10,9 +10,18 @@
     "log4j",
     "node"
   ],
+  "author": {
+    "name": "Janez",
+    "email": "mjanee@gmail.com"
+  },
   "maintainers": [
-    "Janos Meszaros <mjanee@gmail.com>"
+    "Janez <mjanee@gmail.com>"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/janez89/logger.git"
+  },
+  "access": "public",
   "license": "MIT",
   "type": "module",
   "main": "./dist/cjs/index.cjs",

@@ -1,0 +1,46 @@
+{
+  "name": "@janez89/logger",
+  "version": "1.0.0",
+  "description": "Minimalist simple Log4j like logger for NodeJS",
+  "keywords": [
+    "mini",
+    "minimalist",
+    "simple",
+    "logger",
+    "log4j",
+    "node"
+  ],
+  "maintainers": [
+    "Janos Meszaros <mjanee@gmail.com>"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "scripts": {
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "postbuild:cjs": "node scripts/rename-files.mjs dist/cjs .js .cjs",
+    "build": "npm run build:esm && npm run build:cjs",
+    "clean": "rimraf dist",
+    "test": "node --loader ts-node/esm --test test/**/*.test.ts",
+    "test:watch": "node --loader ts-node/esm --test --watch test/**/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "typescript": "^5.0.4",
+    "ts-node": "^10.9.2",
+    "rimraf": "^6.1.2"
+  }
+}

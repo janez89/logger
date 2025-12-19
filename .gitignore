@@ -1,0 +1,13 @@
+node_modules/
+dist
+
+### Idea ###
+.idea
+*.iml
+
+### VS Code ###
+.vscode/
+
+### OS related ###
+.DS_Store
+Thumbs.db
